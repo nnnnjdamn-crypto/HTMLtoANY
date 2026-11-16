@@ -1,0 +1,9 @@
+{
+  "name": "HTML Studio",
+  "short_name": "HTML Studio",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f0e0c",
+  "theme_color": "#0f0e0c",
+  "icons": [{ "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

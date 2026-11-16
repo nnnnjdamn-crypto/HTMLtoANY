@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTML Studio</title>
+<meta name="description" content="Import HTML websites, preview and edit them, and generate Android and Windows app projects.">
+<meta name="theme-color" content="#0f0e0c">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><img src="assets/icon.svg" alt="" width="30" height="30"><span>HTML Studio</span></div>
+    <nav>
+      <a href="#dashboard" data-nav="dashboard">Dashboard</a>
+      <a href="#import" data-nav="import">Import</a>
+      <a href="#projects" data-nav="projects">Projects</a>
+      <a href="#preview" data-nav="preview">Live preview</a>
+      <a href="#editor" data-nav="editor">Editor and export</a>
+      <a href="#apk" data-nav="apk">HTML to APK</a>
+      <a href="#exe" data-nav="exe">HTML to EXE</a>
+      <a href="#deploy" data-nav="deploy">GitHub Pages</a>
+      <a href="#account" data-nav="account">Account</a>
+    </nav>
+    <div class="side-foot"><span id="side-user">Not signed in</span><br>Your files stay in this browser. Nothing is uploaded.</div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <button id="menu" class="ghost" aria-label="Open navigation">Menu</button>
+      <h1 id="title">Dashboard</h1>
+      <span id="current" class="pill">No project selected</span>
+    </header>
+
+    <section id="view-dashboard" class="view">
+      <div class="stats">
+        <div><b id="st-projects">0</b><span>Projects</span></div>
+        <div><b id="st-files">0</b><span>Files</span></div>
+        <div><b id="st-size">0 B</b><span>Stored in this browser</span></div>
+      </div>
+      <h2>Recent projects</h2>
+      <div id="recent" class="grid"></div>
+    </section>
+
+    <section id="view-import" class="view">
+      <label id="drop" class="drop">
+        <input id="file" type="file" accept=".html,.htm,.zip" hidden>
+        <strong>Drop an .html file or a website .zip here</strong>
+        <span>or click to choose one. The ZIP can include CSS, JavaScript, images and fonts.</span>
+      </label>
+      <p id="import-status" class="status" role="status"></p>
+    </section>
+
+    <section id="view-projects" class="view">
+      <div id="project-list" class="grid"></div>
+    </section>
+
+    <section id="view-preview" class="view">
+      <div class="toolbar">
+        <select id="pv-select" data-project aria-label="Project"></select>
+        <button id="pv-refresh">Refresh preview</button>
+        <button id="pv-open">Open in new tab</button>
+        <div class="seg">
+          <button data-tab="render" class="on">Render</button>
+          <button data-tab="source">HTML source</button>
+        </div>
+      </div>
+      <iframe id="pv-frame" title="Live preview" sandbox="allow-scripts allow-forms allow-modals allow-popups"></iframe>
+      <pre id="pv-source" class="code" hidden></pre>
+    </section>
+
+    <section id="view-editor" class="view">
+      <div class="toolbar">
+        <select id="ed-project" data-project aria-label="Project"></select>
+        <select id="ed-file" aria-label="File"></select>
+        <button id="ed-save" class="primary">Save changes</button>
+        <button id="ed-zip">Export ZIP</button>
+        <button id="ed-html">Export single HTML</button>
+      </div>
+      <textarea id="ed-text" class="editor" spellcheck="false" aria-label="File contents"></textarea>
+      <p id="ed-status" class="status"></p>
+    </section>
+
+    <section id="view-apk" class="view">
+      <form id="apk-form" class="form">
+        <label class="field wide"><span>Import an HTML file or website ZIP (optional)</span><input id="apk-file" type="file" accept=".html,.htm,.zip"></label>
+        <label class="field"><span>Project, used when no file is chosen</span><select id="apk-project" data-project></select></label>
+        <label class="field"><span>App name</span><input id="apk-name" required maxlength="40" value="My Web App"></label>
+        <label class="field"><span>Package ID</span><input id="apk-pkg" required value="com.example.mywebapp"></label>
+        <label class="field"><span>Version name</span><input id="apk-ver" value="1.0"></label>
+        <label class="field"><span>Version code</span><input id="apk-code" type="number" min="1" value="1"></label>
+        <label class="field"><span>Splash background</span><input id="apk-splash" type="color" value="#15130f"></label>
+        <label class="field"><span>Splash seconds (0 to 10)</span><input id="apk-secs" type="number" min="0" max="10" value="2"></label>
+        <label class="field wide"><span>Launcher icon (square PNG, JPG or WebP, optional)</span><input id="apk-icon" type="file" accept="image/png,image/jpeg,image/webp"></label>
+        <div class="wide"><button class="primary" type="submit">Generate Android project ZIP</button></div>
+      </form>
+      <p id="apk-status" class="status"></p>
+      <div class="prose">
+        <h2>Build the APK</h2>
+        <ol>
+          <li>Install Android Studio with the Android SDK for platform 34.</li>
+          <li>Open the unzipped folder and wait for Gradle sync. Android Studio creates the Gradle wrapper.</li>
+          <li>Choose Build, then Build APK(s). The debug APK is in app/build/outputs/apk/debug/.</li>
+        </ol>
+        <p>The ZIP also contains README-BUILD.md with release signing steps. HTML Studio generates source files only. It does not compile the APK.</p>
+      </div>
+    </section>
+
+    <section id="view-exe" class="view">
+      <form id="exe-form" class="form">
+        <label class="field wide"><span>Import an HTML file or website ZIP (optional)</span><input id="exe-file" type="file" accept=".html,.htm,.zip"></label>
+        <label class="field"><span>Project, used when no file is chosen</span><select id="exe-project" data-project></select></label>
+        <label class="field"><span>Window title</span><input id="exe-name" required maxlength="60" value="My Web App"></label>
+        <label class="field"><span>Version (1.0 or 1.0.0.0)</span><input id="exe-ver" value="1.0.0"></label>
+        <label class="field"><span>Window width</span><input id="exe-w" type="number" min="480" max="3840" value="1200"></label>
+        <label class="field"><span>Window height</span><input id="exe-h" type="number" min="360" max="2160" value="800"></label>
+        <label class="field wide"><span>App icon (square PNG, JPG or WebP, optional)</span><input id="exe-icon" type="file" accept="image/png,image/jpeg,image/webp"></label>
+        <div class="wide"><button class="primary" type="submit">Generate Windows project ZIP</button></div>
+      </form>
+      <p id="exe-status" class="status"></p>
+      <div class="prose">
+        <h2>Build the EXE</h2>
+        <ol>
+          <li>Install the .NET 8 SDK on Windows 10 or 11.</li>
+          <li>Open a terminal in the unzipped folder and run the publish command in README-BUILD.md.</li>
+          <li>The executable is written to bin, then Release, then net8.0-windows, then win-x64, then publish.</li>
+        </ol>
+        <p>The app uses WebView2 and does not bundle Electron, NW.js, Tauri or Chromium. HTML Studio generates source files only.</p>
+      </div>
+    </section>
+
+    <section id="view-deploy" class="view">
+      <div class="prose">
+        <h2>Publish a project on GitHub Pages</h2>
+        <ol>
+          <li>Choose a project and build its GitHub Pages bundle. The bundle contains your files, an empty .nojekyll file and a README.md.</li>
+          <li>Create a GitHub repository and upload the bundle contents to the root of the main branch.</li>
+          <li>Open Settings, then Pages. Under Build and deployment, select Deploy from a branch, then main and / (root).</li>
+          <li>Open the URL GitHub shows after the first deployment finishes.</li>
+        </ol>
+        <p>HTML Studio itself is deployed the same way: upload this folder to the repository root.</p>
+      </div>
+      <div class="toolbar">
+        <select id="deploy-project" data-project aria-label="Project"></select>
+        <button id="deploy-go" class="primary">Build GitHub Pages bundle</button>
+      </div>
+    </section>
+    <section id="view-account" class="view">
+      <p id="acc-notice" class="status" role="status"></p>
+      <div id="acc-out" class="auth-panel">
+        <div class="seg">
+          <button type="button" data-mode="signup" class="on">Create account</button>
+          <button type="button" data-mode="signin">Sign in</button>
+        </div>
+        <form id="form-signup" class="auth-form">
+          <label class="field"><span>Name</span><input id="su-name" autocomplete="name" required maxlength="60"></label>
+          <label class="field"><span>Email</span><input id="su-email" type="email" autocomplete="email" required></label>
+          <label class="field"><span>Password (8 or more characters)</span><input id="su-pass" type="password" autocomplete="new-password" required minlength="8"></label>
+          <label class="field"><span>Confirm password</span><input id="su-pass2" type="password" autocomplete="new-password" required></label>
+          <button class="primary" type="submit">Create account</button>
+          <p id="signup-status" class="status" role="status"></p>
+        </form>
+        <form id="form-signin" class="auth-form" hidden>
+          <label class="field"><span>Email</span><input id="si-email" type="email" autocomplete="email" required></label>
+          <label class="field"><span>Password</span><input id="si-pass" type="password" autocomplete="current-password" required></label>
+          <button class="primary" type="submit">Sign in</button>
+          <button type="button" id="reset" class="ghost">Send password reset email</button>
+          <p id="signin-status" class="status" role="status"></p>
+        </form>
+        <div class="or"><span>or</span></div>
+        <button id="google" type="button">Continue with Google</button>
+      </div>
+      <div id="acc-in" class="auth-panel" hidden>
+        <h2 id="acc-name"></h2>
+        <p id="acc-email" class="muted"></p>
+        <p id="acc-verified" class="muted small"></p>
+        <div class="actions">
+          <button id="acc-resend" type="button">Resend verification email</button>
+          <button id="signout" type="button" class="danger">Sign out</button>
+        </div>
+        <p id="acc-status" class="status" role="status"></p>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="script.js"></script>
+<script type="module" src="auth.js"></script>
+</body>
+</html>
